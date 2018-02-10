@@ -1,5 +1,5 @@
 IMAGE := ip.jog.li
-VERSION := 0.2
+VERSION := 0.3.0
 
 GCR_HOST := eu.gcr.io
 GCP_PROJECT := ipjogli
