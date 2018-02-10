@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func init() {
@@ -34,15 +33,8 @@ type ipInfo struct {
 	Registry  string `json:"registry"`
 }
 
-func whoisIP(ip string) (ipInfo, error) {
-	d := net.Dialer{
-		// Don't wait too long to establish the connection
-		Timeout: 3 * time.Second,
-		// Enable Happy Eyeballs
-		DualStack: true,
-	}
-
-	conn, err := d.Dial("tcp", "whois.cymru.com:43")
+func whoisIP(r *http.Request, ip string) (ipInfo, error) {
+	conn, err := newWhoisConn(r)
 	if err != nil {
 		return ipInfo{}, err
 	}
@@ -93,7 +85,7 @@ func infoHandler(w http.ResponseWriter, r *http.Request) {
 	info, err = mcGet(r, addr)
 	if err != nil {
 		// Memcache miss, so fetch from Team Cymru and save to memcache
-		info, err = whoisIP(addr)
+		info, err = whoisIP(r, addr)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
