@@ -17,16 +17,10 @@ func init() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var addr string
-	if _, ok := r.Header["X-Appengine-Remote-Addr"]; ok {
+	addr, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		// Assume that this is App Engine and thus there was no port
 		addr = r.RemoteAddr
-	} else {
-		var err error
-		addr, _, err = net.SplitHostPort(r.RemoteAddr)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 	}
 	fmt.Fprintf(w, addr+"\n")
 }
@@ -88,21 +82,14 @@ func whoisIP(ip string) (ipInfo, error) {
 }
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
-	var addr string
-	if _, ok := r.Header["X-Appengine-Remote-Addr"]; ok {
+	addr, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		// Assume that this is App Engine and thus there was no port
 		addr = r.RemoteAddr
-	} else {
-		var err error
-		addr, _, err = net.SplitHostPort(r.RemoteAddr)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 	}
 
 	// Attempt to fetch from memcache
 	var info ipInfo
-	var err error
 	info, err = mcGet(r, addr)
 	if err != nil {
 		// Memcache miss, so fetch from Team Cymru and save to memcache
