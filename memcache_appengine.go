@@ -15,12 +15,12 @@ func mcGet(r *http.Request, ip string) (ipInfo, error) {
 	var info *ipInfo
 	i, err := memcache.JSON.Get(ctx, ip, &info)
 	if err != nil {
+		log.Errorf(ctx, "memcache error: %+v", err)
 		return ipInfo{}, err
 	}
 	if err == nil {
-		log.Infof(ctx, "%s", i.Value)
+		log.Infof(ctx, "Data retrieved from memcache: %s", i.Value)
 	}
-	log.Debugf(ctx, "%+v", err)
 	return *info, err
 }
 
