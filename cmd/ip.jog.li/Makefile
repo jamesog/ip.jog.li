@@ -1,7 +1,8 @@
 IMAGE := ip.jog.li
 VERSION := 0.3.0
 
-GCR_HOST := eu.gcr.io
+GCR_REGION  := eu
+GCR_HOST    := $(GCR_REGION).gcr.io
 GCP_PROJECT := ipjogli
 
 all: build
@@ -15,6 +16,7 @@ run:
 push:
 	docker tag $(IMAGE):$(VERSION) $(GCR_HOST)/$(GCP_PROJECT)/$(IMAGE):$(VERSION)
 	gcloud docker -- push $(GCR_HOST)/$(GCP_PROJECT)/$(IMAGE):$(VERSION)
+	gsutil acl ch -r -u AllUsers:READ gs://$(GCR_REGION).artifacts.$(GCP_PROJECT).appspot.com/
 
 deploy:
 	kubectl apply -f deployment.yaml
