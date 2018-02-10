@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ip-jog-li
+spec:
+  ports:
+  - port: 8000
+  selector:
+    app: ip-jog-li
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-jog-li
+spec:
+  selector:
+    matchLabels:
+      app: ip-jog-li
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ip-jog-li
+    spec:
+      containers:
+      - name: ip-jog-li
+        image: eu.gcr.io/ipjogli/ip.jog.li:0.3.0
+        ports:
+        - containerPort: 8000

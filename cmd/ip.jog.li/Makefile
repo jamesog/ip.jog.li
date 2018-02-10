@@ -15,3 +15,6 @@ run:
 push:
 	docker tag $(IMAGE):$(VERSION) $(GCR_HOST)/$(GCP_PROJECT)/$(IMAGE):$(VERSION)
 	gcloud docker -- push $(GCR_HOST)/$(GCP_PROJECT)/$(IMAGE):$(VERSION)
+
+deploy:
+	kubectl apply -f deployment.yaml
