@@ -16,7 +16,7 @@ func newWhoisConn(r *http.Request) (net.Conn, error) {
 		DualStack: true,
 	}
 
-	conn, err := d.Dial("tcp", "whois.cymru.com:43")
+	conn, err := d.Dial("tcp", whoisAddr)
 	if err != nil {
 		return nil, err
 	}

@@ -33,6 +33,8 @@ type ipInfo struct {
 	Registry  string `json:"registry"`
 }
 
+var whoisAddr = "whois.cymru.com:43"
+
 func whoisIP(r *http.Request, ip string) (ipInfo, error) {
 	conn, err := newWhoisConn(r)
 	if err != nil {
