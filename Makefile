@@ -1,5 +1,5 @@
 IMAGE := ip.jog.li
-VERSION := 0.3.1
+VERSION := 0.4.0
 
 GCR_REGION  := eu
 GCR_HOST    := $(GCR_REGION).gcr.io
