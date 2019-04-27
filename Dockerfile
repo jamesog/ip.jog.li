@@ -1,14 +1,16 @@
-FROM golang:1.9 AS build
+FROM golang:1.12 AS build
 
-WORKDIR /go/src/ip.jog.li
-COPY main.go .
+WORKDIR /go/src/github.com/jamesog/ip.jog.li
+COPY . .
 
-RUN go get -d -v ./...
-RUN CGO_ENABLED=0 go build -a -tags netgo -ldflags '-w' -v ./... .
+RUN go get -d -v ./... && \
+	CGO_ENABLED=0 go install -a -tags netgo -ldflags '-w' -v ./cmd/ip.jog.li && \
+	echo "nobody:x:65534:65534:Nobody:/:" > /etc_passwd
 
 FROM scratch
-COPY --from=build /go/src/ip.jog.li/ip.jog.li /ip.jog.li
+COPY --from=build /go/bin/ip.jog.li /ip.jog.li
+COPY --from=build /etc_passwd /etc/passwd
 
-EXPOSE 8000
+USER nobody
 
 CMD ["/ip.jog.li"]
