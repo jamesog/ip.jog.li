@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"os"
 	"strings"
 
 	"github.com/jamesog/iptoasn"
@@ -19,6 +20,13 @@ func init() {
 
 // remoteAddr reads an HTTP request and returns an IP (in string form).
 func remoteAddr(r *http.Request) string {
+	if app := os.Getenv("FLY_APP_NAME"); app != "" {
+		return r.Header.Get("Fly-Client-IP")
+	}
+	return parseXFF(r)
+}
+
+func parseXFF(r *http.Request) string {
 	// Attempt to get the IP from the X-Forwarded-For header.
 	// If that's empty then use the request's remote address.
 	// N.B. if there are multiple X-Forwarded-For headers (meaning the user
