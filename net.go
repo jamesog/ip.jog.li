@@ -7,11 +7,7 @@ import (
 // Helpers for evaluating an IP address
 
 func init() {
-	nonGlobalNets = make([]netip.Prefix, 0, len(nonGlobalCIDRs))
-	for _, cidr := range nonGlobalCIDRs {
-		net := netip.MustParsePrefix(cidr)
-		nonGlobalNets = append(nonGlobalNets, net)
-	}
+	buildNonGlobalNets()
 }
 
 // The list of CIDRs net.IP.IsGlobaUnicast() incorrectly reports as global addresses
@@ -30,6 +26,14 @@ var nonGlobalCIDRs = []string{
 }
 
 var nonGlobalNets []netip.Prefix
+
+func buildNonGlobalNets() {
+	nonGlobalNets = make([]netip.Prefix, 0, len(nonGlobalCIDRs))
+	for _, cidr := range nonGlobalCIDRs {
+		net := netip.MustParsePrefix(cidr)
+		nonGlobalNets = append(nonGlobalNets, net)
+	}
+}
 
 func isRoutableAddr(ip netip.Addr) bool {
 	for _, net := range nonGlobalNets {
