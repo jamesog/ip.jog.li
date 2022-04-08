@@ -1,4 +1,4 @@
-FROM golang:1.12 AS build
+FROM golang:1.18 AS build
 
 WORKDIR /go/src/github.com/jamesog/ip.jog.li
 COPY . .
