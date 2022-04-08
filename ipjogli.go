@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/netip"
 	"strings"
 
 	"github.com/jamesog/iptoasn"
@@ -31,8 +32,15 @@ func remoteAddr(r *http.Request) string {
 		// to a remote server so we don't want the first egress IP, rather
 		// the last possible proxy that isn't internal to the network of this
 		// server.
+		// Note: If there is a reverse proxy in front of the this application
+		// this will return the wrong IP. A list of "trusted" proxies is
+		// needed.
 		for i := len(addrs) - 1; i >= 0; i-- {
-			ip := net.ParseIP(strings.TrimSpace(addrs[i]))
+			ip, err := netip.ParseAddr(strings.TrimSpace(addrs[i]))
+			if err != nil {
+				// X-Forwarded-For is corrupted
+				return ""
+			}
 			// If this is a globally-routable address, assume it's the last
 			// known ingress and therefore how the request is seen by HTTP
 			// servers.

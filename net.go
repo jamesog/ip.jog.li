@@ -1,14 +1,16 @@
 package ipjogli
 
-import "net"
+import (
+	"net/netip"
+)
 
 // Helpers for evaluating an IP address
 
 func init() {
-	nonGlobalNets = make([]net.IPNet, 0, len(nonGlobalCIDRs))
+	nonGlobalNets = make([]netip.Prefix, 0, len(nonGlobalCIDRs))
 	for _, cidr := range nonGlobalCIDRs {
-		_, net, _ := net.ParseCIDR(cidr)
-		nonGlobalNets = append(nonGlobalNets, *net)
+		net := netip.MustParsePrefix(cidr)
+		nonGlobalNets = append(nonGlobalNets, net)
 	}
 }
 
@@ -27,9 +29,9 @@ var nonGlobalCIDRs = []string{
 	"203.0.113.0/24",  // RFC5737 Documentation
 }
 
-var nonGlobalNets []net.IPNet
+var nonGlobalNets []netip.Prefix
 
-func isRoutableAddr(ip net.IP) bool {
+func isRoutableAddr(ip netip.Addr) bool {
 	for _, net := range nonGlobalNets {
 		if net.Contains(ip) {
 			return false
